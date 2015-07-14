@@ -34,6 +34,13 @@ class StripeGateway {
 	protected $prorate = true;
 
 	/**
+	 * Indicates if the plan should be anchored to a certain date of the month.
+	 *
+	 * @var int
+	 */
+	protected $billing_cycle_anchor = null;
+
+	/**
 	 * Indicates the "quantity" of the plan.
 	 *
 	 * @var int
@@ -117,6 +124,9 @@ class StripeGateway {
 			'plan' => $this->plan, 'prorate' => $this->prorate,
 			'quantity' => $this->quantity, 'trial_end' => $this->getTrialEndForUpdate(),
 		];
+
+		if ($this->billing_cycle_anchor)
+			$payload['billing_cycle_anchor'] = $this->billing_cycle_anchor;
 
 		return $payload;
 	}
@@ -577,6 +587,19 @@ class StripeGateway {
 	public function noProrate()
 	{
 		$this->prorate = false;
+
+		return $this;
+	}
+
+	/**
+	 * Set the timestamp to use for the subscription billing anchor date.
+	 *
+	 * @param  int  $time
+	 * @return \Laravel\Cashier\StripeGateway
+	 */
+	public function billingCycleAnchor($time)
+	{
+		$this->billing_cycle_anchor = $time;
 
 		return $this;
 	}
